@@ -10,15 +10,15 @@ margin:0;
 font-family:Arial;
 color:white;
 text-align:center;
-background:linear-gradient(270deg,#020617,#0f172a,#1e293b);
-background-size:400% 400%;
-animation:fondo 10s infinite;
+background:#020617;
+overflow:hidden;
 }
 
-@keyframes fondo{
-0%{background-position:0% 50%;}
-50%{background-position:100% 50%;}
-100%{background-position:0% 50%;}
+canvas{
+position:fixed;
+top:0;
+left:0;
+z-index:-1;
 }
 
 h1{
@@ -81,7 +81,6 @@ border-radius:12px;
 background:#38bdf8;
 color:white;
 cursor:pointer;
-margin-top:30px;
 }
 
 button:hover{
@@ -92,6 +91,8 @@ background:#0ea5e9;
 </head>
 
 <body>
+
+<canvas id="stars"></canvas>
 
 <h1>🎲 Tirar el Dado</h1>
 
@@ -174,7 +175,75 @@ document.getElementById("resultado").innerHTML="Salió el número: "+n;
 
 document.getElementById("sound").play();
 
+crearParticulas();
+
 }
+
+function crearParticulas(){
+
+for(let i=0;i<20;i++){
+
+let p=document.createElement("div");
+
+p.style.position="absolute";
+p.style.width="6px";
+p.style.height="6px";
+p.style.background="white";
+p.style.borderRadius="50%";
+p.style.left="50%";
+p.style.top="50%";
+
+document.body.appendChild(p);
+
+let x=(Math.random()-0.5)*400;
+let y=(Math.random()-0.5)*400;
+
+p.animate([
+{transform:"translate(0,0)",opacity:1},
+{transform:`translate(${x}px,${y}px)`,opacity:0}
+],{
+duration:800
+});
+
+setTimeout(()=>p.remove(),800);
+
+}
+
+}
+
+const canvas=document.getElementById("stars");
+const ctx=canvas.getContext("2d");
+
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+let stars=[];
+
+for(let i=0;i<120;i++){
+stars.push({
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+r:Math.random()*2
+});
+}
+
+function drawStars(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+ctx.fillStyle="white";
+
+stars.forEach(s=>{
+ctx.beginPath();
+ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+ctx.fill();
+});
+
+requestAnimationFrame(drawStars);
+
+}
+
+drawStars();
 
 </script>
 
