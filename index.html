@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
 <title>Dado Aleatorio</title>
 
@@ -26,31 +27,39 @@ left:0;
 z-index:-1;
 }
 
-#dice{
+.scene{
+width:150px;
+height:150px;
+margin:80px auto;
+perspective:600px;
+}
+
+.cube{
+width:150px;
+height:150px;
+position:relative;
+transform-style:preserve-3d;
+transition:transform 1.2s;
+}
+
+.face{
+position:absolute;
 width:150px;
 height:150px;
 background:white;
-border:6px solid #ddd;
-margin:80px auto;
-display:grid;
-grid-template-columns:repeat(3,1fr);
-grid-template-rows:repeat(3,1fr);
-padding:20px;
-box-sizing:border-box;
+border:5px solid #ddd;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:40px;
 }
 
-.dot{
-width:20px;
-height:20px;
-background:black;
-border-radius:50%;
-justify-self:center;
-align-self:center;
-}
-
-.hidden{
-visibility:hidden;
-}
+.front{transform:rotateY(0deg) translateZ(75px);}
+.back{transform:rotateY(180deg) translateZ(75px);}
+.right{transform:rotateY(90deg) translateZ(75px);}
+.left{transform:rotateY(-90deg) translateZ(75px);}
+.top{transform:rotateX(90deg) translateZ(75px);}
+.bottom{transform:rotateX(-90deg) translateZ(75px);}
 
 button{
 padding:15px 40px;
@@ -80,7 +89,18 @@ font-size:24px;
 
 <h1>🎲 Dado Aleatorio</h1>
 
-<div id="dice"></div>
+<div class="scene">
+<div class="cube" id="cube">
+
+<div class="face front">1</div>
+<div class="face back">6</div>
+<div class="face right">3</div>
+<div class="face left">4</div>
+<div class="face top">5</div>
+<div class="face bottom">2</div>
+
+</div>
+</div>
 
 <button onclick="roll()">Tirar dado</button>
 
@@ -88,50 +108,32 @@ font-size:24px;
 
 <script>
 
-const dice=document.getElementById("dice");
-
-function crearDado(numero){
-
-dice.innerHTML="";
-
-let posiciones={
-1:[4],
-2:[0,8],
-3:[0,4,8],
-4:[0,2,6,8],
-5:[0,2,4,6,8],
-6:[0,2,3,5,6,8]
-};
-
-for(let i=0;i<9;i++){
-
-let dot=document.createElement("div");
-
-if(posiciones[numero].includes(i)){
-dot.className="dot";
-}else{
-dot.className="dot hidden";
-}
-
-dice.appendChild(dot);
-
-}
-
-}
+const cube=document.getElementById("cube");
 
 function roll(){
 
 let numero=Math.floor(Math.random()*6)+1;
 
-crearDado(numero);
+let rotaciones={
+1:"rotateX(0deg) rotateY(0deg)",
+2:"rotateX(-90deg) rotateY(0deg)",
+3:"rotateX(0deg) rotateY(-90deg)",
+4:"rotateX(0deg) rotateY(90deg)",
+5:"rotateX(90deg) rotateY(0deg)",
+6:"rotateX(180deg) rotateY(0deg)"
+};
+
+let extraX=360*(Math.floor(Math.random()*3)+1);
+let extraY=360*(Math.floor(Math.random()*3)+1);
+
+cube.style.transform=
+`rotateX(${extraX}deg) rotateY(${extraY}deg) `+
+rotaciones[numero];
 
 document.getElementById("resultado").innerText=
 "Salió el número: "+numero;
 
 }
-
-crearDado(1);
-
 
 const canvas=document.getElementById("stars");
 const ctx=canvas.getContext("2d");
@@ -142,13 +144,11 @@ canvas.height=window.innerHeight;
 let stars=[];
 
 for(let i=0;i<150;i++){
-
 stars.push({
 x:Math.random()*canvas.width,
 y:Math.random()*canvas.height,
 r:Math.random()*2
 });
-
 }
 
 function drawStars(){
