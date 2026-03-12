@@ -5,31 +5,61 @@
 
 <style>
 body{
-    font-family: Arial;
-    text-align:center;
-    background:#111;
-    color:white;
+background:#0f172a;
+color:white;
+font-family:Arial;
+text-align:center;
+margin-top:80px;
 }
 
-#dice{
-    font-size:120px;
-    margin-top:80px;
-    transition: transform 0.6s;
+.scene{
+width:150px;
+height:150px;
+margin:auto;
+perspective:600px;
 }
+
+.cube{
+width:150px;
+height:150px;
+position:relative;
+transform-style:preserve-3d;
+transform:rotateX(0deg) rotateY(0deg);
+transition: transform 1s;
+}
+
+.face{
+position:absolute;
+width:150px;
+height:150px;
+background:white;
+border:3px solid black;
+font-size:60px;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.front{ transform:rotateY(0deg) translateZ(75px); }
+.back{ transform:rotateY(180deg) translateZ(75px); }
+.right{ transform:rotateY(90deg) translateZ(75px); }
+.left{ transform:rotateY(-90deg) translateZ(75px); }
+.top{ transform:rotateX(90deg) translateZ(75px); }
+.bottom{ transform:rotateX(-90deg) translateZ(75px); }
 
 button{
-    margin-top:40px;
-    font-size:25px;
-    padding:15px 40px;
-    border:none;
-    border-radius:10px;
-    background:#00c3ff;
-    color:white;
-    cursor:pointer;
+margin-top:40px;
+padding:15px 40px;
+font-size:22px;
+border:none;
+border-radius:10px;
+background:#38bdf8;
+color:white;
+cursor:pointer;
 }
 
 button:hover{
-    background:#0099cc;
+background:#0ea5e9;
 }
 </style>
 
@@ -37,25 +67,44 @@ button:hover{
 
 <body>
 
-<h1>Tirar el Dado 🎲</h1>
+<h1>🎲 Tirar el Dado</h1>
 
-<div id="dice">⚀</div>
+<div class="scene">
+<div class="cube" id="cube">
+<div class="face front">1</div>
+<div class="face back">6</div>
+<div class="face right">3</div>
+<div class="face left">4</div>
+<div class="face top">2</div>
+<div class="face bottom">5</div>
+</div>
+</div>
 
-<button onclick="tirarDado()">Tirar dado</button>
+<button onclick="rollDice()">Tirar dado</button>
+
+<h2 id="resultado"></h2>
 
 <script>
 
-function tirarDado(){
+function rollDice(){
 
 let numero = Math.floor(Math.random()*6)+1;
 
-let dados = ["⚀","⚁","⚂","⚃","⚄","⚅"];
+let cube = document.getElementById("cube");
+let resultado = document.getElementById("resultado");
 
-document.getElementById("dice").style.transform="rotate(360deg)";
+let rotaciones = {
+1:"rotateX(0deg) rotateY(0deg)",
+2:"rotateX(-90deg)",
+3:"rotateY(-90deg)",
+4:"rotateY(90deg)",
+5:"rotateX(90deg)",
+6:"rotateY(180deg)"
+};
 
-setTimeout(()=>{
-document.getElementById("dice").innerHTML=dados[numero-1];
-},300);
+cube.style.transform = rotaciones[numero];
+
+resultado.innerHTML = "Salió el número: " + numero;
 
 }
 
