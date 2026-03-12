@@ -1,108 +1,48 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Dado Galáctico</title>
+<title>Dado con Física</title>
 
 <style>
 
 body{
 margin:0;
-font-family:Arial;
+background:#020617;
 color:white;
+font-family:Arial;
 text-align:center;
-background:black;
 overflow:hidden;
 }
 
-canvas{
-position:fixed;
-top:0;
-left:0;
-z-index:-2;
-}
-
-#galaxy{
-position:fixed;
-width:400px;
-height:400px;
-background:radial-gradient(circle,rgba(120,80,255,0.6),transparent 70%);
-border-radius:50%;
-filter:blur(40px);
-animation:spin 40s linear infinite;
-z-index:-1;
-top:20%;
-left:60%;
-}
-
-@keyframes spin{
-from{transform:rotate(0deg)}
-to{transform:rotate(360deg)}
-}
-
 h1{
-margin-top:60px;
-}
-
-.scene{
-width:150px;
-height:150px;
-margin:80px auto;
-perspective:700px;
-}
-
-.cube{
-width:150px;
-height:150px;
-position:relative;
-transform-style:preserve-3d;
-transition:transform 1.2s ease-out;
-}
-
-.face{
 position:absolute;
-width:150px;
-height:150px;
-background:white;
-border:4px solid #ddd;
-display:grid;
-grid-template-columns:repeat(3,1fr);
-grid-template-rows:repeat(3,1fr);
-padding:20px;
-box-sizing:border-box;
+top:20px;
+width:100%;
 }
-
-.dot{
-width:20px;
-height:20px;
-background:black;
-border-radius:50%;
-justify-self:center;
-align-self:center;
-}
-
-.hidden{
-visibility:hidden;
-}
-
-.front{ transform: rotateY(0deg) translateZ(75px); }
-.back{ transform: rotateY(180deg) translateZ(75px); }
-.right{ transform: rotateY(90deg) translateZ(75px); }
-.left{ transform: rotateY(-90deg) translateZ(75px); }
-.top{ transform: rotateX(90deg) translateZ(75px); }
-.bottom{ transform: rotateX(-90deg) translateZ(75px); }
 
 button{
+position:absolute;
+top:80px;
+left:50%;
+transform:translateX(-50%);
 padding:15px 40px;
 font-size:22px;
 border:none;
-border-radius:12px;
+border-radius:10px;
 background:#38bdf8;
 color:white;
 cursor:pointer;
 }
 
-button:hover{
-background:#0ea5e9;
+#resultado{
+position:absolute;
+top:140px;
+width:100%;
+font-size:24px;
+}
+
+canvas{
+display:block;
 }
 
 </style>
@@ -110,159 +50,84 @@ background:#0ea5e9;
 
 <body>
 
-<canvas id="stars"></canvas>
-<div id="galaxy"></div>
+<h1>🎲 Dado con Física</h1>
 
-<h1>🎲 Dado Galáctico</h1>
+<button onclick="tirar()">Tirar dado</button>
 
-<div class="scene">
-<div class="cube" id="cube">
-
-<div class="face front">
-<div></div><div></div><div></div>
-<div></div><div class="dot"></div><div></div>
-<div></div><div></div><div></div>
-</div>
-
-<div class="face back">
-<div class="dot"></div><div></div><div class="dot"></div>
-<div></div><div class="dot"></div><div></div>
-<div class="dot"></div><div></div><div class="dot"></div>
-</div>
-
-<div class="face right">
-<div class="dot"></div><div></div><div class="dot"></div>
-<div></div><div></div><div></div>
-<div class="dot"></div><div></div><div class="dot"></div>
-</div>
-
-<div class="face left">
-<div class="dot"></div><div></div><div class="dot"></div>
-<div class="dot"></div><div></div><div class="dot"></div>
-<div class="dot"></div><div></div><div class="dot"></div>
-</div>
-
-<div class="face top">
-<div class="dot"></div><div></div><div class="dot"></div>
-<div></div><div class="dot"></div><div></div>
-<div class="dot"></div><div></div><div class="dot"></div>
-</div>
-
-<div class="face bottom">
-<div class="dot"></div><div></div><div class="dot"></div>
-<div class="dot"></div><div></div><div class="dot"></div>
-<div class="dot"></div><div></div><div class="dot"></div>
-</div>
-
-</div>
-</div>
-
-<button onclick="roll()">Tirar dado</button>
-
-<h2 id="resultado"></h2>
+<div id="resultado"></div>
 
 <audio id="sound">
 <source src="https://www.soundjay.com/misc/sounds/dice-roll-1.mp3">
 </audio>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+
 <script>
 
-const cube=document.getElementById("cube");
+const {Engine,Render,Runner,Bodies,World,Body} = Matter;
 
-function roll(){
+const engine = Engine.create();
+const world = engine.world;
 
-let n=Math.floor(Math.random()*6)+1;
+const render = Render.create({
+element: document.body,
+engine: engine,
+options:{
+width: window.innerWidth,
+height: window.innerHeight,
+wireframes:false,
+background:"#020617"
+}
+});
 
-let base={
-1:[0,0],
-2:[-90,0],
-3:[0,90],
-4:[0,-90],
-5:[90,0],
-6:[0,180]
-};
+Render.run(render);
+Runner.run(Runner.create(),engine);
 
-let spinX=360*(Math.floor(Math.random()*3)+2);
-let spinY=360*(Math.floor(Math.random()*3)+2);
+const suelo = Bodies.rectangle(window.innerWidth/2,window.innerHeight-10,window.innerWidth,20,{isStatic:true});
+const izquierda = Bodies.rectangle(10,window.innerHeight/2,20,window.innerHeight,{isStatic:true});
+const derecha = Bodies.rectangle(window.innerWidth-10,window.innerHeight/2,20,window.innerHeight,{isStatic:true});
 
-let finalX=spinX+base[n][0];
-let finalY=spinY+base[n][1];
+World.add(world,[suelo,izquierda,derecha]);
 
-cube.style.transform=`rotateX(${finalX}deg) rotateY(${finalY}deg)`;
+let dado;
 
-document.getElementById("resultado").innerHTML="Salió el número: "+n;
+function tirar(){
+
+if(dado){
+World.remove(world,dado);
+}
+
+let numero = Math.floor(Math.random()*6)+1;
+
+dado = Bodies.rectangle(
+window.innerWidth/2,
+200,
+80,
+80,
+{
+restitution:0.7,
+render:{
+fillStyle:"white",
+strokeStyle:"black",
+lineWidth:2
+}
+}
+);
+
+World.add(world,dado);
+
+Body.setVelocity(dado,{
+x:(Math.random()-0.5)*20,
+y:-20
+});
+
+Body.setAngularVelocity(dado,0.3);
+
+document.getElementById("resultado").innerHTML="Resultado: "+numero;
 
 document.getElementById("sound").play();
 
-explosion();
-
 }
-
-function explosion(){
-
-for(let i=0;i<25;i++){
-
-let p=document.createElement("div");
-
-p.style.position="absolute";
-p.style.width="6px";
-p.style.height="6px";
-p.style.background="white";
-p.style.borderRadius="50%";
-p.style.left="50%";
-p.style.top="50%";
-
-document.body.appendChild(p);
-
-let x=(Math.random()-0.5)*500;
-let y=(Math.random()-0.5)*500;
-
-p.animate([
-{transform:"translate(0,0)",opacity:1},
-{transform:`translate(${x}px,${y}px)`,opacity:0}
-],{
-duration:900
-});
-
-setTimeout(()=>p.remove(),900);
-
-}
-
-}
-
-const canvas=document.getElementById("stars");
-const ctx=canvas.getContext("2d");
-
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
-
-let stars=[];
-
-for(let i=0;i<150;i++){
-stars.push({
-x:Math.random()*canvas.width,
-y:Math.random()*canvas.height,
-r:Math.random()*2
-});
-}
-
-function drawStars(){
-
-ctx.clearRect(0,0,canvas.width,canvas.height);
-
-ctx.fillStyle="white";
-
-stars.forEach(s=>{
-ctx.beginPath();
-ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-ctx.fill();
-});
-
-requestAnimationFrame(drawStars);
-
-}
-
-drawStars();
 
 </script>
 
