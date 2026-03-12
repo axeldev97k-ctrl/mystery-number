@@ -1,20 +1,65 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Preguntas Profundas</title>
+<title>Dado 3D</title>
+
+<style>
+body{
+    font-family: Arial;
+    text-align:center;
+    background:#111;
+    color:white;
+}
+
+#dice{
+    font-size:120px;
+    margin-top:80px;
+    transition: transform 0.6s;
+}
+
+button{
+    margin-top:40px;
+    font-size:25px;
+    padding:15px 40px;
+    border:none;
+    border-radius:10px;
+    background:#00c3ff;
+    color:white;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#0099cc;
+}
+</style>
+
 </head>
 
 <body>
 
-<h1>Preguntas Profundas</h1>
+<h1>Tirar el Dado 🎲</h1>
 
-<h2>¿Qué harías si supieras que mañana es tu último día?</h2>
+<div id="dice">⚀</div>
 
-<textarea rows="5" cols="40" placeholder="Escribe tu respuesta..."></textarea>
+<button onclick="tirarDado()">Tirar dado</button>
 
-<br><br>
+<script>
 
-<button>Enviar respuesta</button>
+function tirarDado(){
+
+let numero = Math.floor(Math.random()*6)+1;
+
+let dados = ["⚀","⚁","⚂","⚃","⚄","⚅"];
+
+document.getElementById("dice").style.transform="rotate(360deg)";
+
+setTimeout(()=>{
+document.getElementById("dice").innerHTML=dados[numero-1];
+},300);
+
+}
+
+</script>
 
 </body>
 </html>
