@@ -7,20 +7,28 @@
 
 body{
 margin:0;
-background:#020617;
-color:white;
 font-family:Arial;
+color:white;
 text-align:center;
+background:linear-gradient(270deg,#020617,#0f172a,#1e293b);
+background-size:400% 400%;
+animation:fondo 10s infinite;
+}
+
+@keyframes fondo{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
 }
 
 h1{
-margin-top:50px;
+margin-top:60px;
 }
 
 .scene{
 width:150px;
 height:150px;
-margin:60px auto;
+margin:80px auto;
 perspective:600px;
 }
 
@@ -29,7 +37,7 @@ width:150px;
 height:150px;
 position:relative;
 transform-style:preserve-3d;
-transition:transform 1s ease-out;
+transition:transform 1.2s ease-out;
 }
 
 .face{
@@ -41,7 +49,7 @@ border:4px solid #ddd;
 display:grid;
 grid-template-columns:repeat(3,1fr);
 grid-template-rows:repeat(3,1fr);
-padding:15px;
+padding:20px;
 box-sizing:border-box;
 }
 
@@ -66,29 +74,18 @@ visibility:hidden;
 .bottom{ transform: rotateX(-90deg) translateZ(75px); }
 
 button{
-padding:15px 35px;
-font-size:20px;
+padding:15px 40px;
+font-size:22px;
 border:none;
-border-radius:10px;
+border-radius:12px;
 background:#38bdf8;
 color:white;
 cursor:pointer;
-margin:10px;
-}
-
-#stats{
 margin-top:30px;
-display:flex;
-justify-content:center;
-gap:20px;
-flex-wrap:wrap;
-font-size:20px;
 }
 
-.stat{
-background:#1e293b;
-padding:10px 15px;
-border-radius:8px;
+button:hover{
+background:#0ea5e9;
 }
 
 </style>
@@ -141,22 +138,15 @@ border-radius:8px;
 </div>
 
 <button onclick="roll()">Tirar dado</button>
-<button onclick="reset()">Reiniciar</button>
 
 <h2 id="resultado"></h2>
 
-<div id="stats">
-<div class="stat">1: <span id="c1">0</span></div>
-<div class="stat">2: <span id="c2">0</span></div>
-<div class="stat">3: <span id="c3">0</span></div>
-<div class="stat">4: <span id="c4">0</span></div>
-<div class="stat">5: <span id="c5">0</span></div>
-<div class="stat">6: <span id="c6">0</span></div>
-</div>
+<audio id="sound">
+<source src="https://www.soundjay.com/misc/sounds/dice-roll-1.mp3">
+</audio>
 
 <script>
 
-let contador=[0,0,0,0,0,0];
 const cube=document.getElementById("cube");
 
 function roll(){
@@ -182,24 +172,7 @@ cube.style.transform=`rotateX(${finalX}deg) rotateY(${finalY}deg)`;
 
 document.getElementById("resultado").innerHTML="Salió el número: "+n;
 
-contador[n-1]++;
-
-for(let i=1;i<=6;i++){
-document.getElementById("c"+i).innerHTML=contador[i-1];
-}
-
-}
-
-function reset(){
-
-contador=[0,0,0,0,0,0];
-
-for(let i=1;i<=6;i++){
-document.getElementById("c"+i).innerHTML=0;
-}
-
-document.getElementById("resultado").innerHTML="";
-cube.style.transform="rotateX(0deg) rotateY(0deg)";
+document.getElementById("sound").play();
 
 }
 
