@@ -1,69 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Dado Galáctico</title>
+<meta charset="UTF-8">
+<title>Dado Aleatorio</title>
 
 <style>
 
 body{
 margin:0;
-font-family:Arial;
-color:white;
-text-align:center;
 background:black;
+color:white;
+font-family:Arial;
+text-align:center;
 overflow:hidden;
+}
+
+h1{
+margin-top:50px;
 }
 
 canvas{
 position:fixed;
 top:0;
 left:0;
-z-index:-2;
-}
-
-#galaxy{
-position:fixed;
-width:400px;
-height:400px;
-background:radial-gradient(circle,rgba(120,80,255,0.6),transparent 70%);
-border-radius:50%;
-filter:blur(40px);
-animation:spin 40s linear infinite;
 z-index:-1;
-top:20%;
-left:60%;
 }
 
-@keyframes spin{
-from{transform:rotate(0deg)}
-to{transform:rotate(360deg)}
-}
-
-h1{
-margin-top:60px;
-}
-
-.scene{
-width:150px;
-height:150px;
-margin:80px auto;
-perspective:700px;
-}
-
-.cube{
-width:150px;
-height:150px;
-position:relative;
-transform-style:preserve-3d;
-transition:transform 1.2s ease-out;
-}
-
-.face{
-position:absolute;
+#dice{
 width:150px;
 height:150px;
 background:white;
-border:4px solid #ddd;
+border:6px solid #ddd;
+margin:80px auto;
 display:grid;
 grid-template-columns:repeat(3,1fr);
 grid-template-rows:repeat(3,1fr);
@@ -84,13 +52,6 @@ align-self:center;
 visibility:hidden;
 }
 
-.front{ transform: rotateY(0deg) translateZ(75px); }
-.back{ transform: rotateY(180deg) translateZ(75px); }
-.right{ transform: rotateY(90deg) translateZ(75px); }
-.left{ transform: rotateY(-90deg) translateZ(75px); }
-.top{ transform: rotateX(90deg) translateZ(75px); }
-.bottom{ transform: rotateX(-90deg) translateZ(75px); }
-
 button{
 padding:15px 40px;
 font-size:22px;
@@ -105,130 +66,72 @@ button:hover{
 background:#0ea5e9;
 }
 
+#resultado{
+margin-top:20px;
+font-size:24px;
+}
+
 </style>
 </head>
 
 <body>
 
 <canvas id="stars"></canvas>
-<div id="galaxy"></div>
 
-<h1>🎲 Dado Galáctico</h1>
+<h1>🎲 Dado Aleatorio</h1>
 
-<div class="scene">
-<div class="cube" id="cube">
-
-<div class="face front">
-<div></div><div></div><div></div>
-<div></div><div class="dot"></div><div></div>
-<div></div><div></div><div></div>
-</div>
-
-<div class="face back">
-<div class="dot"></div><div></div><div class="dot"></div>
-<div></div><div class="dot"></div><div></div>
-<div class="dot"></div><div></div><div class="dot"></div>
-</div>
-
-<div class="face right">
-<div class="dot"></div><div></div><div class="dot"></div>
-<div></div><div></div><div></div>
-<div class="dot"></div><div></div><div class="dot"></div>
-</div>
-
-<div class="face left">
-<div class="dot"></div><div></div><div class="dot"></div>
-<div class="dot"></div><div></div><div class="dot"></div>
-<div class="dot"></div><div></div><div class="dot"></div>
-</div>
-
-<div class="face top">
-<div class="dot"></div><div></div><div class="dot"></div>
-<div></div><div class="dot"></div><div></div>
-<div class="dot"></div><div></div><div class="dot"></div>
-</div>
-
-<div class="face bottom">
-<div class="dot"></div><div></div><div class="dot"></div>
-<div class="dot"></div><div></div><div class="dot"></div>
-<div class="dot"></div><div></div><div class="dot"></div>
-</div>
-
-</div>
-</div>
+<div id="dice"></div>
 
 <button onclick="roll()">Tirar dado</button>
 
-<h2 id="resultado"></h2>
-
-<audio id="sound">
-<source src="https://www.soundjay.com/misc/sounds/dice-roll-1.mp3">
-</audio>
+<div id="resultado"></div>
 
 <script>
 
-const cube=document.getElementById("cube");
+const dice=document.getElementById("dice");
+
+function crearDado(numero){
+
+dice.innerHTML="";
+
+let posiciones={
+1:[4],
+2:[0,8],
+3:[0,4,8],
+4:[0,2,6,8],
+5:[0,2,4,6,8],
+6:[0,2,3,5,6,8]
+};
+
+for(let i=0;i<9;i++){
+
+let dot=document.createElement("div");
+
+if(posiciones[numero].includes(i)){
+dot.className="dot";
+}else{
+dot.className="dot hidden";
+}
+
+dice.appendChild(dot);
+
+}
+
+}
 
 function roll(){
 
-let n=Math.floor(Math.random()*6)+1;
+let numero=Math.floor(Math.random()*6)+1;
 
-let base={
-1:[0,0],
-2:[-90,0],
-3:[0,90],
-4:[0,-90],
-5:[90,0],
-6:[0,180]
-};
+crearDado(numero);
 
-let spinX=360*(Math.floor(Math.random()*3)+2);
-let spinY=360*(Math.floor(Math.random()*3)+2);
-
-let finalX=spinX+base[n][0];
-let finalY=spinY+base[n][1];
-
-cube.style.transform=`rotateX(${finalX}deg) rotateY(${finalY}deg)`;
-
-document.getElementById("resultado").innerHTML="Salió el número: "+n;
-
-document.getElementById("sound").play();
-
-explosion();
+document.getElementById("resultado").innerText=
+"Salió el número: "+numero;
 
 }
 
-function explosion(){
+crearDado(1);
 
-for(let i=0;i<25;i++){
-
-let p=document.createElement("div");
-
-p.style.position="absolute";
-p.style.width="6px";
-p.style.height="6px";
-p.style.background="white";
-p.style.borderRadius="50%";
-p.style.left="50%";
-p.style.top="50%";
-
-document.body.appendChild(p);
-
-let x=(Math.random()-0.5)*500;
-let y=(Math.random()-0.5)*500;
-
-p.animate([
-{transform:"translate(0,0)",opacity:1},
-{transform:`translate(${x}px,${y}px)`,opacity:0}
-],{
-duration:900
-});
-
-setTimeout(()=>p.remove(),900);
-
-}
-
-}
 
 const canvas=document.getElementById("stars");
 const ctx=canvas.getContext("2d");
@@ -239,11 +142,13 @@ canvas.height=window.innerHeight;
 let stars=[];
 
 for(let i=0;i<150;i++){
+
 stars.push({
 x:Math.random()*canvas.width,
 y:Math.random()*canvas.height,
 r:Math.random()*2
 });
+
 }
 
 function drawStars(){
